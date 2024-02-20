@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: ecgalaxy
+  description: Ansible role that installs microk8s and addons.
+  company: European Commission
+  license: EUPL-1.2
+  min_ansible_version: "2.5"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+  galaxy_tags:
+    - microk8s
+dependencies: []

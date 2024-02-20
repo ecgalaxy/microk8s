@@ -1,0 +1,4 @@
+---
+microk8s_version: "1.29/stable"
+microk8s_user: "" #to be set in the playbook
+microk8s_addons: []
