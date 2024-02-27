@@ -1,0 +1,28 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+    - name: Install dependencies
+      ansible.builtin.package:
+        name:
+          - fuse
+          - snap
+          - snapd
+          - squashfuse
+        state: present
+    - name: Start snapd
+      ansible.builtin.systemd:
+        name: snapd
+        enabled: yes
+        state: started
+  environment:
+    http_proxy: "{{ lookup('env', 'http_proxy') }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') }}"
+    no_proxy: "{{ lookup('env', 'no_proxy') }}"
+  become: true

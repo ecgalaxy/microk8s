@@ -1,12 +1,13 @@
 ECGALAXY microk8s
 ===============
 
-Ansible role that installs microk8s and addons.
+Ansible role that installs [MicroK8s](https://microk8s.io/) and addons.
 
 Requirements
 ------------
 
-- Currently, only supported on Ubuntu 22.04 LTS.
+- Ubuntu 22.04 LTS, which is the only platform currently supported.
+- [Snap](https://snapcraft.io/).
 
 Role Variables
 --------------
@@ -17,6 +18,7 @@ Role Variables
 
 Dependencies
 ------------
+
 None.
 
 Example Playbook

@@ -1,0 +1,31 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: ubuntu2204-${CI_JOB_ID:-0}
+    image: code.europa.eu:4567/ecgalaxy/ubuntu2204-ansible:latest
+    command: ""
+    volumes:  
+      - /sys/fs/cgroup:/sys/fs/cgroup
+      - /sys/kernel/security:/sys/kernel/security
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    environment:
+      http_proxy: "${http_proxy}"
+      https_proxy: "${https_proxy}"
+      no_proxy: "${no_proxy}"
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        ansible_user: ansible
+verifier:
+  name: ansible
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .

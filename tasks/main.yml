@@ -1,5 +1,4 @@
 ---
-
 - name: Assert microk8s_user is set
   ansible.builtin.assert:
     that:
@@ -9,44 +8,54 @@
     fail_msg: "The variable 'microk8s_user' has not been set."
     success_msg: "'microk8s_user' is currently set to {{ microk8s_user }}"
 
-- name: "Ensure that the user '{{ microk8s_user }}' exists."
-  become: true
+- name: "Ensure that the following user exists: '{{ microk8s_user }}'"
   ansible.builtin.user:
     name: "{{ microk8s_user }}"
     create_home: true
     state: "present"
   register: microk8s_user_info
+  become: true
 
 - name: "Retrieve user home directory for user: '{{ microk8s_user }}'"
   ansible.builtin.set_fact:
     user_home_dir: "{{ microk8s_user_info.home }}"
 
 - name: Install microk8s using snap
-  become: true
-  community.general.snap:
-    name: microk8s
-    classic: true
-    channel: "{{ microk8s_version }}"
+  block:
+    - name: Install microk8s using snap
+      community.general.snap:
+        name: microk8s
+        classic: true
+        channel: "{{ microk8s_version }}"
+      become: true
 
-- name: "Add user '{{ microk8s_user }}' to group microk8s"
-  become: true
+  rescue:
+    - name: Install microk8s using snap (rescue)
+      ansible.builtin.command: "snap install microk8s --classic --channel={{ microk8s_version }}"
+      become: true
+      register: cmd_result
+      changed_when: "'already installed' not in cmd_result.stdout"
+      failed_when: "'installed' not in cmd_result.stdout"
+
+- name: "Add following user to group microk8s: '{{ microk8s_user }}'"
   ansible.builtin.user:
     name: "{{ microk8s_user }}"
     groups: microk8s
+  become: true
 
 - name: "Set ownership of $HOME/.kube caching directory"
-  become: true
   ansible.builtin.file:
     path: "{{ user_home_dir }}/.kube"
     recurse: true
     owner: "{{ microk8s_user }}"
     group: "{{ microk8s_user }}"
     state: directory
+  become: true
 
 - name: Enable addons in microk8s
-  become: true
   ansible.builtin.command:
     cmd: microk8s enable {{ item }}
   loop: "{{ microk8s_addons }}"
   register: enable_output
   changed_when: "'already enabled' not in enable_output.stdout"
+  become: true

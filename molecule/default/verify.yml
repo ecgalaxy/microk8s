@@ -1,0 +1,14 @@
+---
+- name: Verify
+  hosts: all
+  vars_files:
+    - ../../defaults/main.yml
+  tasks:
+    - name: Check microk8s execution
+      ansible.builtin.command: /snap/bin/microk8s version # noqa no-changed-when
+      register: output
+      become: true
+    - name: Assert return code is 0
+      ansible.builtin.assert:
+        that:
+        - output.rc == 0
