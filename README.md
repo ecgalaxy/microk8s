@@ -16,6 +16,12 @@ Role Variables
 - `microk8s_user`: The user on the target host who will be using microk8s. **(required)**
 - `microk8s_addons`: A list of addons to be enabled. (default: `[]`)
 
+During execution, the `microk8s` group is created and the specified `microk8s_user` added to it.
+
+This user may need to logout and login to be able to use the `microk8s` command.
+
+Another way for the user is to execute `newgrp microk8s` in the terminal.
+
 Dependencies
 ------------
 
@@ -32,6 +38,15 @@ Example Playbook
         microk8s_addons:
           - ingress
           - metrics-server
+
+One-liner
+---------
+
+    bash <(curl -s https://code.europa.eu/-/snippets/1/raw/main/ansible-role.sh) ecgalaxy.microk8s --extra-vars '{"microk8s_user":"the_username_here"}'
+
+See [ansible-role](https://code.europa.eu/-/snippets/1) for instructions.
+
+Please verify the script integrity first.
 
 License
 -------
