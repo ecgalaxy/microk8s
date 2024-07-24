@@ -41,6 +41,7 @@
   ansible.builtin.user:
     name: "{{ microk8s_user }}"
     groups: microk8s
+    append: true
   become: true
 
 - name: "Set ownership of $HOME/.kube caching directory"
